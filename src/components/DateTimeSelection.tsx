@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Doctor, Clinic } from '../types';
+import { clinics } from '../data/mockData';
 
 interface DateTimeSelectionProps {
   doctor: Doctor;
@@ -19,7 +20,7 @@ export default function DateTimeSelection({
   selectedTime,
   onDateSelect,
   onTimeSelect,
-  onNext
+  onNext,
 }: DateTimeSelectionProps) {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
@@ -41,14 +42,16 @@ export default function DateTimeSelection({
   };
 
   const getAvailableSlots = (date: string) => {
-    const availability = doctor.availability.find(a => a.date === date);
+    const availability = doctor.availability.find((a) => a.date === date);
     if (!availability) return [];
-    
-    return availability.slots.filter(slot => {
+
+    const availableSlots = availability.slots.filter((slot) => {
       if (doctor.onlineOnly) return slot.available; // For video appointments
       if (!clinic) return false;
       return slot.available && slot.clinicId === clinic.id;
     });
+
+    return availableSlots;
   };
 
   const formatDate = (date: Date) => {
@@ -59,35 +62,35 @@ export default function DateTimeSelection({
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-    
+
     if (date.toDateString() === today.toDateString()) {
       return 'Today';
     } else if (date.toDateString() === tomorrow.toDateString()) {
       return 'Tomorrow';
     }
-    
+
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const navigateWeek = (direction: 'prev' | 'next') => {
     const newStart = new Date(currentWeekStart);
     newStart.setDate(currentWeekStart.getDate() + (direction === 'next' ? 7 : -7));
-    
+
     // Don't allow going to past weeks
     const today = new Date();
     const mondayOfThisWeek = new Date(today);
     const dayOfWeek = today.getDay();
     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     mondayOfThisWeek.setDate(today.getDate() + mondayOffset);
-    
+
     if (direction === 'prev' && newStart < mondayOfThisWeek) {
       return;
     }
-    
+
     setCurrentWeekStart(newStart);
   };
 
@@ -96,25 +99,27 @@ export default function DateTimeSelection({
 
   // Group time slots by time periods for better organization
   const groupSlotsByPeriod = (slots: any[]) => {
-    const morning = slots.filter(slot => {
+    const morning = slots.filter((slot) => {
       const hour = parseInt(slot.time.split(':')[0]);
       return hour < 12;
     });
-    
-    const afternoon = slots.filter(slot => {
+
+    const afternoon = slots.filter((slot) => {
       const hour = parseInt(slot.time.split(':')[0]);
       return hour >= 12 && hour < 17;
     });
-    
-    const evening = slots.filter(slot => {
+
+    const evening = slots.filter((slot) => {
       const hour = parseInt(slot.time.split(':')[0]);
       return hour >= 17;
     });
-    
+
     return { morning, afternoon, evening };
   };
 
   const { morning, afternoon, evening } = groupSlotsByPeriod(selectedDateSlots);
+
+  console.log({ doctor, clinic, selectedDate, selectedTime });
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -152,22 +157,23 @@ export default function DateTimeSelection({
               </button>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-7 gap-2 mb-4">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
                 {day}
               </div>
             ))}
           </div>
-          
+
           <div className="grid grid-cols-7 gap-2">
-            {weekDates.map(date => {
+            {weekDates.map((date) => {
               const dateStr = formatDate(date);
+
               const hasSlots = getAvailableSlots(dateStr).length > 0;
               const isSelected = selectedDate === dateStr;
               const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
-              
+
               return (
                 <button
                   key={dateStr}
@@ -182,14 +188,18 @@ export default function DateTimeSelection({
                   }`}
                 >
                   <div className="text-center">
-                    <p className={`text-sm font-medium ${
-                      isSelected ? 'text-blue-600' : hasSlots && !isPast ? 'text-gray-900' : 'text-gray-400'
-                    }`}>
+                    <p
+                      className={`text-sm font-medium ${
+                        isSelected
+                          ? 'text-blue-600'
+                          : hasSlots && !isPast
+                          ? 'text-gray-900'
+                          : 'text-gray-400'
+                      }`}
+                    >
                       {date.getDate()}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formatDisplayDate(date)}
-                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{formatDisplayDate(date)}</p>
                     {hasSlots && !isPast && (
                       <p className="text-xs text-green-600 mt-1">
                         {getAvailableSlots(dateStr).length} slots
@@ -210,7 +220,7 @@ export default function DateTimeSelection({
               Available Times
             </h3>
           </div>
-          
+
           {!selectedDate ? (
             <div className="text-center py-8">
               <Clock className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -226,7 +236,7 @@ export default function DateTimeSelection({
                 <div>
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Morning</h4>
                   <div className="grid grid-cols-3 gap-2">
-                    {morning.map(slot => (
+                    {morning.map((slot) => (
                       <button
                         key={slot.time}
                         onClick={() => onTimeSelect(slot.time)}
@@ -242,12 +252,12 @@ export default function DateTimeSelection({
                   </div>
                 </div>
               )}
-              
+
               {afternoon.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Afternoon</h4>
                   <div className="grid grid-cols-3 gap-2">
-                    {afternoon.map(slot => (
+                    {afternoon.map((slot) => (
                       <button
                         key={slot.time}
                         onClick={() => onTimeSelect(slot.time)}
@@ -263,12 +273,12 @@ export default function DateTimeSelection({
                   </div>
                 </div>
               )}
-              
+
               {evening.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Evening</h4>
                   <div className="grid grid-cols-3 gap-2">
-                    {evening.map(slot => (
+                    {evening.map((slot) => (
                       <button
                         key={slot.time}
                         onClick={() => onTimeSelect(slot.time)}

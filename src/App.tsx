@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Stethoscope } from 'lucide-react';
 import { BookingData } from './types';
 import HomePage from './components/HomePage';
@@ -11,8 +11,18 @@ import ClinicMap from './components/ClinicMap';
 import DateTimeSelection from './components/DateTimeSelection';
 import PersonalInfoForm from './components/PersonalInfoForm';
 import ConfirmationPage from './components/ConfirmationPage';
+import { clinics } from './data/mockData';
 
-type Step = 'home' | 'appointment-type' | 'booking-path' | 'doctor-selection' | 'symptom-input' | 'clinic-map' | 'date-time' | 'personal-info' | 'confirmation';
+type Step =
+  | 'home'
+  | 'appointment-type'
+  | 'booking-path'
+  | 'doctor-selection'
+  | 'symptom-input'
+  | 'clinic-map'
+  | 'date-time'
+  | 'personal-info'
+  | 'confirmation';
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState<Step>('home');
@@ -29,13 +39,21 @@ export default function App() {
       lastName: '',
       phone: '',
       email: '',
-      notes: ''
-    }
+      notes: '',
+    },
   });
 
   const stepLabels = ['Type', 'Path', 'Doctor', 'Location', 'Time', 'Info', 'Confirm'];
-  const stepOrder: Step[] = ['appointment-type', 'booking-path', 'doctor-selection', 'clinic-map', 'date-time', 'personal-info', 'confirmation'];
-  
+  const stepOrder: Step[] = [
+    'appointment-type',
+    'booking-path',
+    'doctor-selection',
+    'clinic-map',
+    'date-time',
+    'personal-info',
+    'confirmation',
+  ];
+
   const getCurrentStepNumber = () => {
     if (currentStep === 'home') return 0;
     if (currentStep === 'symptom-input') return 3; // Same as doctor-selection
@@ -56,8 +74,8 @@ export default function App() {
         lastName: '',
         phone: '',
         email: '',
-        notes: ''
-      }
+        notes: '',
+      },
     });
     setCurrentStep('home');
   };
@@ -79,7 +97,9 @@ export default function App() {
         break;
       case 'date-time':
         if (bookingData.appointmentType === 'video') {
-          setCurrentStep(bookingData.bookingPath === 'doctor' ? 'doctor-selection' : 'symptom-input');
+          setCurrentStep(
+            bookingData.bookingPath === 'doctor' ? 'doctor-selection' : 'symptom-input',
+          );
         } else {
           setCurrentStep('clinic-map');
         }
@@ -147,7 +167,11 @@ export default function App() {
           <BookingPathSelection
             selectedPath={bookingData.bookingPath}
             onSelect={(path) => setBookingData({ ...bookingData, bookingPath: path })}
-            onNext={() => setCurrentStep(bookingData.bookingPath === 'doctor' ? 'doctor-selection' : 'symptom-input')}
+            onNext={() =>
+              setCurrentStep(
+                bookingData.bookingPath === 'doctor' ? 'doctor-selection' : 'symptom-input',
+              )
+            }
           />
         )}
 
@@ -171,7 +195,13 @@ export default function App() {
             symptoms={bookingData.symptoms}
             selectedDoctor={bookingData.doctor}
             onSymptomsChange={(symptoms) => setBookingData({ ...bookingData, symptoms })}
-            onDoctorSelect={(doctor) => setBookingData({ ...bookingData, doctor })}
+            onDoctorSelect={(doctor) =>
+              setBookingData({
+                ...bookingData,
+                doctor,
+                clinic: clinics[Number(doctor?.clinics[0] || clinics[0])],
+              })
+            }
             onNext={() => {
               if (bookingData.appointmentType === 'video') {
                 setCurrentStep('date-time');
@@ -206,10 +236,10 @@ export default function App() {
         {currentStep === 'personal-info' && (
           <PersonalInfoForm
             personalInfo={bookingData.personalInfo}
-            onUpdate={(field, value) => 
+            onUpdate={(field, value) =>
               setBookingData({
                 ...bookingData,
-                personalInfo: { ...bookingData.personalInfo, [field]: value }
+                personalInfo: { ...bookingData.personalInfo, [field]: value },
               })
             }
             onNext={() => setCurrentStep('confirmation')}
@@ -217,10 +247,7 @@ export default function App() {
         )}
 
         {currentStep === 'confirmation' && (
-          <ConfirmationPage
-            bookingData={bookingData}
-            onNewBooking={resetBooking}
-          />
+          <ConfirmationPage bookingData={bookingData} onNewBooking={resetBooking} />
         )}
       </main>
     </div>
