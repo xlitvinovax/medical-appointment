@@ -1,4 +1,3 @@
-import React from 'react';
 import { User, Activity, ArrowRight } from 'lucide-react';
 
 interface BookingPathSelectionProps {
@@ -7,12 +6,20 @@ interface BookingPathSelectionProps {
   onNext: () => void;
 }
 
-export default function BookingPathSelection({ selectedPath, onSelect, onNext }: BookingPathSelectionProps) {
+export default function BookingPathSelection({
+  selectedPath,
+  onSelect,
+  onNext,
+}: BookingPathSelectionProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">How Would You Like to Find Your Doctor?</h2>
-        <p className="text-lg text-gray-600">Choose the option that best describes your situation</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          How Would You Like to Find Your Doctor?
+        </h2>
+        <p className="text-lg text-gray-600">
+          Choose the option that best describes your situation
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -25,12 +32,14 @@ export default function BookingPathSelection({ selectedPath, onSelect, onNext }:
           }`}
         >
           <div className="flex items-center mb-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-              selectedPath === 'doctor' ? 'bg-blue-600' : 'bg-gray-100'
-            }`}>
-              <User className={`h-6 w-6 ${
-                selectedPath === 'doctor' ? 'text-white' : 'text-gray-600'
-              }`} />
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                selectedPath === 'doctor' ? 'bg-blue-600' : 'bg-gray-100'
+              }`}
+            >
+              <User
+                className={`h-6 w-6 ${selectedPath === 'doctor' ? 'text-white' : 'text-gray-600'}`}
+              />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 ml-4">I Know My Doctor</h3>
           </div>
@@ -53,12 +62,16 @@ export default function BookingPathSelection({ selectedPath, onSelect, onNext }:
           }`}
         >
           <div className="flex items-center mb-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-              selectedPath === 'symptoms' ? 'bg-blue-600' : 'bg-gray-100'
-            }`}>
-              <Activity className={`h-6 w-6 ${
-                selectedPath === 'symptoms' ? 'text-white' : 'text-gray-600'
-              }`} />
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                selectedPath === 'symptoms' ? 'bg-blue-600' : 'bg-gray-100'
+              }`}
+            >
+              <Activity
+                className={`h-6 w-6 ${
+                  selectedPath === 'symptoms' ? 'text-white' : 'text-gray-600'
+                }`}
+              />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 ml-4">I Have Symptoms</h3>
           </div>

@@ -1,55 +1,135 @@
 import { Doctor, Clinic } from '../types';
 
 // Generate availability for the next 30 days
-const generateAvailability = (doctorId: string, clinicIds: string[], isOnlineOnly: boolean = false) => {
+const generateAvailability = (
+  doctorId: string,
+  clinicIds: string[],
+  isOnlineOnly: boolean = false,
+) => {
   const availability = [];
   const today = new Date();
-  
+
   for (let i = 0; i < 30; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
     const dateStr = date.toISOString().split('T')[0];
-    
+
     // Skip Sundays
     if (date.getDay() === 0) continue;
-    
+
     const slots = [];
-    
+
     if (isOnlineOnly) {
       // Online doctors have more flexible hours
-      const times = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'];
-      times.forEach(time => {
+      const times = [
+        '09:00',
+        '09:30',
+        '10:00',
+        '10:30',
+        '11:00',
+        '11:30',
+        '14:00',
+        '14:30',
+        '15:00',
+        '15:30',
+        '16:00',
+        '16:30',
+        '17:00',
+        '17:30',
+      ];
+      times.forEach((time) => {
         // Randomly make some slots unavailable for realism
         const available = Math.random() > 0.3;
         slots.push({ time, available });
       });
     } else {
       // In-person doctors have clinic-specific availability
-      clinicIds.forEach(clinicId => {
+      clinicIds.forEach((clinicId) => {
         let times = [];
-        
+
         // Different time slots based on clinic
-        if (clinicId === '1') { // Central Medical Center
-          times = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'];
-        } else if (clinicId === '2') { // Riverside Health Clinic
-          times = ['07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'];
-        } else if (clinicId === '3') { // Eastside Medical Plaza
-          times = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+        if (clinicId === '1') {
+          // Central Medical Center
+          times = [
+            '08:00',
+            '08:30',
+            '09:00',
+            '09:30',
+            '10:00',
+            '10:30',
+            '11:00',
+            '11:30',
+            '14:00',
+            '14:30',
+            '15:00',
+            '15:30',
+            '16:00',
+            '16:30',
+            '17:00',
+            '17:30',
+          ];
+        } else if (clinicId === '2') {
+          // Riverside Health Clinic
+          times = [
+            '07:00',
+            '07:30',
+            '08:00',
+            '08:30',
+            '09:00',
+            '09:30',
+            '10:00',
+            '10:30',
+            '11:00',
+            '13:00',
+            '13:30',
+            '14:00',
+            '14:30',
+            '15:00',
+            '15:30',
+            '16:00',
+            '16:30',
+            '17:00',
+            '17:30',
+            '18:00',
+            '18:30',
+            '19:00',
+            '19:30',
+          ];
+        } else if (clinicId === '3') {
+          // Eastside Medical Plaza
+          times = [
+            '09:00',
+            '09:30',
+            '10:00',
+            '10:30',
+            '11:00',
+            '11:30',
+            '12:00',
+            '12:30',
+            '13:00',
+            '13:30',
+            '14:00',
+            '14:30',
+            '15:00',
+            '15:30',
+            '16:00',
+            '16:30',
+          ];
         }
-        
-        times.forEach(time => {
+
+        times.forEach((time) => {
           // Randomly make some slots unavailable for realism
           const available = Math.random() > 0.25;
           slots.push({ time, available, clinicId });
         });
       });
     }
-    
+
     if (slots.length > 0) {
       availability.push({ date: dateStr, slots });
     }
   }
-  
+
   return availability;
 };
 
@@ -61,10 +141,11 @@ export const doctors: Doctor[] = [
     specialization: 'Cardiology',
     rating: 4.9,
     reviews: 127,
-    image: 'https://images.pexels.com/photos/19218034/pexels-photo-19218034/free-photo-of-smiling-doctor-in-a-lab-coat-and-with-a-stethoscope.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    image:
+      'https://images.pexels.com/photos/19218034/pexels-photo-19218034/free-photo-of-smiling-doctor-in-a-lab-coat-and-with-a-stethoscope.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     clinics: ['1', '2'],
     onlineOnly: false,
-    availability: generateAvailability('1', ['1', '2'])
+    availability: generateAvailability('1', ['1', '2']),
   },
   {
     id: '2',
@@ -73,10 +154,11 @@ export const doctors: Doctor[] = [
     specialization: 'Neurology',
     rating: 4.8,
     reviews: 89,
-    image: 'https://images.ctfassets.net/pdf29us7flmy/1osb6w6u1E2kCJn1voYZOa/777dcded6a415c6a727f5c178db4ef2e/Healthcare_close-up_shot_of_medical_doctor_smiling_-IO27_ADESKO-.jpeg',
+    image:
+      'https://images.ctfassets.net/pdf29us7flmy/1osb6w6u1E2kCJn1voYZOa/777dcded6a415c6a727f5c178db4ef2e/Healthcare_close-up_shot_of_medical_doctor_smiling_-IO27_ADESKO-.jpeg',
     clinics: ['1', '3'],
     onlineOnly: false,
-    availability: generateAvailability('2', ['1', '3'])
+    availability: generateAvailability('2', ['1', '3']),
   },
   {
     id: '3',
@@ -85,10 +167,11 @@ export const doctors: Doctor[] = [
     specialization: 'Dermatology',
     rating: 4.9,
     reviews: 156,
-    image: 'https://images.pexels.com/photos/5327580/pexels-photo-5327580.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+    image:
+      'https://images.pexels.com/photos/5327580/pexels-photo-5327580.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
     clinics: ['2', '3'],
     onlineOnly: false,
-    availability: generateAvailability('3', ['2', '3'])
+    availability: generateAvailability('3', ['2', '3']),
   },
   {
     id: '5',
@@ -100,7 +183,7 @@ export const doctors: Doctor[] = [
     image: 'https://i.pinimg.com/736x/b9/97/a5/b997a530822d0f2c03259070d4590d45.jpg',
     clinics: ['1', '2', '3'],
     onlineOnly: false,
-    availability: generateAvailability('5', ['1', '2', '3'])
+    availability: generateAvailability('5', ['1', '2', '3']),
   },
   {
     id: '6',
@@ -109,10 +192,11 @@ export const doctors: Doctor[] = [
     specialization: 'Pediatrics',
     rating: 4.9,
     reviews: 178,
-    image: 'https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+    image:
+      'https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
     clinics: ['1', '3'],
     onlineOnly: false,
-    availability: generateAvailability('6', ['1', '3'])
+    availability: generateAvailability('6', ['1', '3']),
   },
   {
     id: '7',
@@ -121,10 +205,11 @@ export const doctors: Doctor[] = [
     specialization: 'Psychiatry',
     rating: 4.7,
     reviews: 112,
-    image: 'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+    image:
+      'https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
     clinics: [],
     onlineOnly: true,
-    availability: generateAvailability('7', [], true)
+    availability: generateAvailability('7', [], true),
   },
   {
     id: '8',
@@ -133,11 +218,12 @@ export const doctors: Doctor[] = [
     specialization: 'General Practice',
     rating: 4.6,
     reviews: 145,
-    image: 'https://images.pexels.com/photos/5327656/pexels-photo-5327656.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
-    clinics: ['2', '3'],
+    image:
+      'https://images.pexels.com/photos/5327656/pexels-photo-5327656.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop',
+    clinics: ['1', '2', '3'],
     onlineOnly: false,
-    availability: generateAvailability('8', ['2', '3'])
-  }
+    availability: generateAvailability('8', ['1', '2', '3']),
+  },
 ];
 
 export const clinics: Clinic[] = [
@@ -148,7 +234,7 @@ export const clinics: Clinic[] = [
     coordinates: { lat: 40.7589, lng: -73.9851 },
     workingHours: 'Mon-Fri: 8:00 AM - 6:00 PM, Sat: 9:00 AM - 4:00 PM',
     phone: '(555) 123-4567',
-    doctors: ['1', '2', '5', '6']
+    doctors: ['1', '2', '5', '6', '8'],
   },
   {
     id: '2',
@@ -157,7 +243,7 @@ export const clinics: Clinic[] = [
     coordinates: { lat: 40.7505, lng: -73.9934 },
     workingHours: 'Mon-Sat: 7:00 AM - 8:00 PM, Sun: 9:00 AM - 5:00 PM',
     phone: '(555) 234-5678',
-    doctors: ['1', '3', '5', '8']
+    doctors: ['1', '3', '5', '8'],
   },
   {
     id: '3',
@@ -166,8 +252,8 @@ export const clinics: Clinic[] = [
     coordinates: { lat: 40.7614, lng: -73.9776 },
     workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM, Sat: 10:00 AM - 3:00 PM',
     phone: '(555) 345-6789',
-    doctors: ['2', '3', '5', '6', '8']
-  }
+    doctors: ['2', '3', '5', '6', '8'],
+  },
 ];
 
 export const specializations = [
@@ -178,7 +264,7 @@ export const specializations = [
   'Orthopedics',
   'Pediatrics',
   'Psychiatry',
-  'Radiology'
+  'Radiology',
 ];
 
 export const commonSymptoms = [
@@ -201,5 +287,5 @@ export const commonSymptoms = [
   'Depression',
   'Weight loss',
   'Weight gain',
-  'Vision problems'
+  'Vision problems',
 ];
